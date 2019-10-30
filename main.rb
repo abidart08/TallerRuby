@@ -10,7 +10,7 @@ end
 
 class Memcached
   @values
-  def Memcached()
+  def initialize()
     values = Hash.new("NO VALUE")
   end
 
@@ -23,6 +23,7 @@ class Memcached
     v = Value.new(key, flag, time, size)
     values["key"] = value
 
+  def add
 
 
 class Value
@@ -30,36 +31,28 @@ class Value
   @flag
   @time
   @size
-  def Value(key, flag, time, size)
+  @data
+  def initialize(key, flag, time, size, data)
     setKey(key)
     setFlag(flag)
     setTime(time)
     setSize(size)
+    setData(data)
   end
-  def setKey(k) 
-    key =  k 
-  end
-  def setFlag(f)
-    flag = f
-  end
-  def setTime(unTime)
-    time = unTime
-  end
-  def setSize(unSize)
-    size = unSize
-  end
-  def getName()
-    return name
-  end
-  def getFlag()
-    return flag
-  end
-  def getTime()
-    return time
-  def getSize()
-    return size
-  end
+
+  def setKey(k) @key =  k end
+  def setFlag(f) @flag = f end
+  def setTime(t) @time = t end
+  def setSize(s) @size = s end
+  def setData(d) @data = d end
+
+  def getKey() return @name end
+  def getFlag() return @flag end
+  def getTime() return @time end
+  def getSize() return @size end
+  def getData() return @data end
+
   def showValue()
-    print getFlag + getSize
+    print "VALUE" + getKey() + getFlag() + getSize() + \r\n + getData
   end
   
