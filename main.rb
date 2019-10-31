@@ -20,7 +20,7 @@ class Memcached
       dif = enSegundos.to_i - t.to_i
       expTime = v.getTime().to_i
       if dif > expTime
-        return v.showValue()
+        v.showValue()
       end
     end
   end
@@ -37,19 +37,25 @@ class Memcached
   #Agrega un valor 
   def add(key, flag, time, size, data)
     #value = gets.chomp
-    if Values[key] == "NO VALUE"
+    if @values[key] == "NO VALUE"
       v = Value.new(key, flag, time, size, data)
-      value["key"] = v 
+      @values["key"] = v 
     end
   end
 
   def replace()
   end
 
-  def append()
+  def append(key, flag, time, size, data)
+    keyValor = @values[key]
+    v = Value.new(key, flag, time ,size.to_i + keyValor.getSize().to_i, keyValor.getData().to_s + data.to_s)
+    @values[key] = v
   end
 
-  def prepend()
+  def prepend(key, flag, time, size, data)
+    keyValor = @values[key]
+    v = Value.new(key, flag, time ,size.to_i + keyValor.getSize().to_i, data.to_s + keyValor.getData().to_s)
+    @values[key] = v
   end
 
 end
@@ -75,7 +81,7 @@ class Value
   def setSize(s) @size = s end
   def setData(d) @data = d end
 
-  def getKey() return @name end
+  def getKey() return @key end
   def getFlag() return @flag end
   def getTime() return @time end
   def getSize() return @size end
@@ -83,13 +89,13 @@ class Value
 
   #Imprime los valores que memcached muestra al solicitarle un valor por medio de get
   def showValue()
-    print "VALUE" + getKey().to_s + getFlag().to_s + getSize().to_s + "\r\n" + getData().to_s
+    return "VALUE " + getKey().to_s + " " + getFlag().to_s + " " + getSize().to_s + "\r\n" + getData().to_s + "\r\n"
   end
-  end
+end
 
   m = Memcached.new()
   while session = server.accept
-    session.print "Welcome to memcached \r\n"
+    session.print "Welcome to Memcached \r\n"
     #m = Memcached.new
     info = session.gets.chomp.strip()
     while info != "exit"
@@ -108,6 +114,24 @@ class Value
         key = infoSplit[1]
         session.print m.get(key).to_s
         session.print "END\r\n"
+        info = session.gets.chomp.strip()
+      elsif command == "append"
+        key = infoSplit[1]
+        flag = infoSplit[2]
+        time = infoSplit[3]
+        size = infoSplit[4]
+        value = session.gets.chomp.strip()
+        m.append(key,flag,time,size,value)
+        session.print "STORED\r\n"
+        info = session.gets.chomp.strip()
+      elsif command == "prepend"
+        key = infoSplit[1]
+        flag = infoSplit[2]
+        time = infoSplit[3]
+        size = infoSplit[4]
+        value = session.gets.chomp.strip()
+        m.prepend(key,flag,time,size,value)
+        session.print "STORED\r\n"
         info = session.gets.chomp.strip()
       else
         session.print "ERROR\r\n"
