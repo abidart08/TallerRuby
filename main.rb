@@ -2,9 +2,19 @@ require 'socket'
 server = TCPServer.new("192.168.1.48", 5678)
 
 while session = server.accept
-  request = session.gets
-  puts request
-  session.print "Hello world! The time is #{Time.now}" 
+  session.print "Welcome to memcached \r\n"
+  info = session.gets.chomp.strip()
+  infoSplit = info.split()
+  command = infoSplit[0]
+  if command == "get"
+    if infoSplit[5] != null 
+      key = infoSplit[1]
+      flag = infoSplit[2]
+      time = infoSplit[3]
+      size = infoSplit[4]
+      value = session.gets.chomp.strip()
+      
+
   session.close
 end
 
@@ -15,15 +25,22 @@ class Memcached
   end
 
   def get(key)
-    return values[key]
+    v = values[key]
+    v.showValue
+    return v
   end
 
-  def set(key, flag, time, size)
-    value = gets.chomp
-    v = Value.new(key, flag, time, size)
-    values["key"] = value
+  def set(key, flag, time, size, data)
+    #value = gets.chomp
+    v = Value.new(key, flag, time, size, data)
+    values["key"] = v
 
-  def add
+
+  def add(key, flag, time, size, data)
+    #value = gets.chomp
+    if Values[key] == "NO VALUE"
+      v = Value.new(key, flag, time, size, data)
+      value["key"] = v 
 
 
 class Value
