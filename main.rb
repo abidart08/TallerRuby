@@ -225,6 +225,35 @@ class TestMemcached < Minitest::Unit::TestCase
     assert_equal nil, @memcached.prepend("foo", 0, 1000, 2, 56)
   end
 
+  #Tests APPEND
+  def testAppendWorking
+    @memcached.set("foo", 0, 1000, 2, 56)
+    assert_equal "STORED\r\n", @memcached.append("foo", 0, 1000, 2, 77)
+  end
+
+  def testAppendNotWorking
+    assert_equal nil, @memcached.append("foo", 0, 1000, 2, 77)
+  end
+
+  #Tests ADD
+  def testAddWorking
+    assert_equal "STORED\r\n", @memcached.add("foo", 0, 1000, 2, 33)
+  end
+
+  def testAddNotWorking
+    @memcached.set("foo", 0, 1000, 2, 56)
+    assert_equal nil, @memcached.add("foo", 0, 1000, 2, 33)
+  end
+
+  #Test REPLACE
+  def testReplaceWorking
+    @memcached.set("foo", 0, 1000, 2, 56)
+    assert_equal "STORED\r\n", @memcached.replace("foo", 0, 1000, 2, 56)
+  end
+
+  def testReplaceNotWorking
+    assert_equal nil, @memcached.replace("foo", 0, 1000, 2, 33)
+  end
 
 end
 
